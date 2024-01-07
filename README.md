@@ -26,6 +26,7 @@ For the mqtt broker you need to define the following environment variables:
 | MQTTTOPIC     | prefix for topic followed by the command | `smarthome/optolink/` |
 | MQTTUSER      | if mqtt broker requires authentification |  `mqtt_user` |
 | MQTTPASSWORD  | if mqtt broker requires authentification |  `secret123` |
+| USB_DEVICE    | USB path (not required) | `/dev/vitocal` |
 
 ### Commands
 
@@ -56,7 +57,7 @@ services:
     container_name: vcontrold
     restart: always
     devices:
-      - /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AL1234-if00-port0:/dev/ttyUSB0
+      - /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AL1234-if00-port0:/dev/vitocal
     environment:
       MQTTHOST: ${MQTTHOST}
       MQTTPORT: ${MQTTPORT}
@@ -73,7 +74,7 @@ services:
 
 In order to pass the environment variables you can use the `.env` file and set the variables according to your needs.
 
-If you want to use the `docker` command it would be e.g. `docker run -d --name='vcontrold-docker' --net='bridge' --privileged=true -e TZ="Europe/Berlin" -e 'MQTTACTIVE'='true' -e 'MQTTHOST'='mqtt-server.home' -e 'MQTTPORT'='1883' -e 'MQTTTOPIC'='vitocal' -e 'MQTTUSER'='mqtt_user' -e 'MQTTPASSWORD'='secret123' -e 'INTERVAL'='60' -v '.config/':'/config':'rw' --device=/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AL1234-if00-port0:/dev/ttyUSB0:rw 'michelmu/vcontrold-openv-mqtt'`
+If you want to use the `docker` command it would be e.g. `docker run -d --name='vcontrold-docker' --net='bridge' --privileged=true -e TZ="Europe/Berlin" -e 'MQTTACTIVE'='true' -e 'MQTTHOST'='mqtt-server.home' -e 'MQTTPORT'='1883' -e 'MQTTTOPIC'='vitocal' -e 'MQTTUSER'='mqtt_user' -e 'MQTTPASSWORD'='secret123' -e 'INTERVAL'='60' -v '.config/':'/config':'rw' --device=/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AL1234-if00-port0:/dev/vitocal:rw 'michelmu/vcontrold-openv-mqtt'`
 
 It also possible to set some values. This can be achieved using the topic `$MQTTTOPIC/commands`. A sample payload to set the water heating temperature would look like this: `setTempWWsoll 55`.
 
