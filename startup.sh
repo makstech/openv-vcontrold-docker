@@ -13,35 +13,35 @@ vcontrold -x /config/vcontrold.xml -P /var/run/vcontrold.pid
 status=$?
 pid=$(pidof vcontrold)
 if [ $status -ne 0 ];then
-	echo "Failed to start vcontrold"
+    echo "Failed to start vcontrold"
 fi
 
 if [ $MQTTACTIVE = true ]; then
-	echo "vcontrold gestartet (PID $pid)"
-	echo "MQTT: aktiv (var = $MQTTACTIVE)"
-	echo "Aktualisierungsintervall: $INTERVAL sec"
-        echo "Lese Parameter: $COMMANDS"
-        /config/mqtt_sub.sh
-	while sleep $INTERVAL; do
-                vclient -h 127.0.0.1:3002 -c ${COMMANDS} -J -o result.json
-               /config/mqtt_publish.sh
-		if [ -e /var/run/vcontrold.pid ]; then
-			:
-		else
-			echo "vcontrold.pid nicht vorhanden, exit 0"
-			exit 0
-		fi
-	done
+    echo "vcontrold gestartet (PID $pid)"
+    echo "MQTT: aktiv (var = $MQTTACTIVE)"
+    echo "Aktualisierungsintervall: $INTERVAL sec"
+    echo "Lese Parameter: $COMMANDS"
+    /config/mqtt_sub.sh
+    while sleep $INTERVAL; do
+        vclient -h 127.0.0.1:3002 -c ${COMMANDS} -J -o result.json
+        /config/mqtt_publish.sh
+        if [ -e /var/run/vcontrold.pid ]; then
+            :
+        else
+            echo "vcontrold.pid nicht vorhanden, exit 0"
+            exit 0
+        fi
+    done
 else
-	echo "vcontrold gestartet"
-	echo "MQTT: inaktiv (var = $MQTTACTIVE)"
-	echo "PID: $pid"
-	while sleep 600; do
-		if [ -e /var/run/vcontrold.pid ]; then
-			:
-		else
-			echo "vcontrold.pid nicht vorhanden, exit 0"
-			exit 0
-		fi
-	done
+    echo "vcontrold gestartet"
+    echo "MQTT: inaktiv (var = $MQTTACTIVE)"
+    echo "PID: $pid"
+    while sleep 600; do
+        if [ -e /var/run/vcontrold.pid ]; then
+            :
+        else
+            echo "vcontrold.pid nicht vorhanden, exit 0"
+            exit 0
+        fi
+    done
 fi
