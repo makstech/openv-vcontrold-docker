@@ -1,26 +1,30 @@
 #!/bin/bash
+
 sleep 3
-# search the USB device as it sometimes is USB0 or USB1
-# USB_DEVICE=`find /dev/ -name vitocal*`
-USB_DEVICE=/dev/vitocal
+
+USB_DEVICE="${USB_DEVICE:-/dev/vitocal}"
 echo "Device ${USB_DEVICE}"
-# make device accessable
+
+# Make the device accessible
 chmod 777 ${USB_DEVICE}
-# set the USB device in the vcontrold.xml settings file
-#sed -i -e "/<serial>/,/<\/serial>/ s|<tty>[0-9a-z\/._A-Z:]\{1,\}</tty>|<tty>$USB_DEVICE</tty>|g" /etc/vcontrold/vcontrold.xml
+
+# Create the output file
+touch result.json
+
+# Start the daemon
 vcontrold -x /config/vcontrold.xml -P /var/run/vcontrold.pid
 
 status=$?
 pid=$(pidof vcontrold)
-if [ $status -ne 0 ];then
-    echo "Failed to start vcontrold"
+if [ $status -ne 0 ]; then
+    echo "Failed to start the vcontrold"
 fi
 
 if [ $MQTTACTIVE = true ]; then
-    echo "vcontrold gestartet (PID $pid)"
-    echo "MQTT: aktiv (var = $MQTTACTIVE)"
-    echo "Aktualisierungsintervall: $INTERVAL sec"
-    echo "Lese Parameter: $COMMANDS"
+    echo "vcontrold started with PID $pid"
+    echo "MQTT: active"
+    echo "Update interval: $INTERVAL sec"
+    echo "Reading parameters: $COMMANDS"
     /config/mqtt_sub.sh
     while sleep $INTERVAL; do
         vclient -h 127.0.0.1:3002 -c ${COMMANDS} -J -o result.json
@@ -28,19 +32,19 @@ if [ $MQTTACTIVE = true ]; then
         if [ -e /var/run/vcontrold.pid ]; then
             :
         else
-            echo "vcontrold.pid nicht vorhanden, exit 0"
+            echo "vcontrold.pid unavailable, exit 0"
             exit 0
         fi
     done
 else
-    echo "vcontrold gestartet"
-    echo "MQTT: inaktiv (var = $MQTTACTIVE)"
+    echo "vcontrold started"
+    echo "MQTT: inactive (var = $MQTTACTIVE)"
     echo "PID: $pid"
     while sleep 600; do
         if [ -e /var/run/vcontrold.pid ]; then
             :
         else
-            echo "vcontrold.pid nicht vorhanden, exit 0"
+            echo "vcontrold.pid unavailable, exit 0"
             exit 0
         fi
     done
