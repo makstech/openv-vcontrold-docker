@@ -27,6 +27,7 @@ For the mqtt broker you need to define the following environment variables:
 | MQTTUSER      | if mqtt broker requires authentification |  `mqtt_user` |
 | MQTTPASSWORD  | if mqtt broker requires authentification |  `secret123` |
 | USB_DEVICE    | USB path (not required) | `/dev/vitocal` |
+| PAYLOAD_JQ_FILTER | `jq` command filter to run on the vclient output | `.` |
 
 ### Commands
 
