@@ -5,8 +5,9 @@ sleep 3
 USB_DEVICE="${USB_DEVICE:-/dev/vitocal}"
 echo "Device ${USB_DEVICE}"
 
-# Make the device accessible
+# Make some stuff accessible
 chmod 777 ${USB_DEVICE}
+chmod +x /config/mqtt_sub.sh /config/mqtt_publish.sh
 
 # Create the output file
 touch result.json
