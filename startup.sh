@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Start cron daemon
+cron
+
 sleep 3
 
 USB_DEVICE="${USB_DEVICE:-/dev/vitocal}"
