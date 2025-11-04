@@ -1,0 +1,21 @@
+name: Require SemVer Label
+
+on:
+  pull_request:
+    types: [opened, labeled, unlabeled, synchronize, edited, ready_for_review]
+
+jobs:
+  enforce-semver-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure PR has exactly one SemVer label
+        uses: mheap/github-action-required-labels@v4
+        with:
+          mode: exactly
+          labels: |
+            semver:major
+            semver:minor
+            semver:patch
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Optionally fail with custom message
+          message: 'PR must include exactly one of: semver:major, semver:minor, semver:patch'
